@@ -1,0 +1,217 @@
+/*File Name: Culminating
+ *Author: Beto Santos Pyne
+ *Date: January 18, 2023
+ *Purpose: a program that can do 4 things, print a full year calendar given a year
+ *         print a month calendar given a year and a month
+ *         tell you the day of the week of a given date
+ *         tell you the date a given number of days after January 1, 1900
+ */
+
+// The "Culminating" class.
+public class Culminating
+{
+    //main method
+    public static void main (String[] args)
+    {
+	String method = " ";
+	//looping until user decides to quit
+	while (!method.equals (""))
+	{
+	    //checking which method to call
+	    System.out.println ("Enter which method you would like to use ");
+	    System.out.println("\"a\" year calendar");
+	    System.out.println("\"b\" month calendar");
+	    System.out.println("\"c\" find weekday");
+	    System.out.println("\"d\" date number of days after the first of 1900");
+	    System.out.println("press enter to quit");
+	    method = In.getString ();
+	    //calling method
+	    if (method.equals ("a"))
+		yearCalendar ();
+	    else if (method.equals ("b"))
+		monthCalendar ();
+	    else if (method.equals ("c"))
+		printWeekDay ();
+	    else if (method.equals ("d"))
+		dateAfter1900 ();
+	    System.out.println ("\n");
+	}
+    } // main method
+
+    //method to print year calendar
+    public static void yearCalendar ()
+    {
+    //declaring variables
+	String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"};
+	int year, weekDay, totalDays;
+	//getting year input
+	System.out.println ("enter the year (after 1900): ");
+	year = In.getInt ();
+	//finding weekday of the first day of the year
+	weekDay = findWeekday (year, "January", 1);
+	//looping for all 12 months
+	for (int i = 1 ; i <= 12 ; i++)
+	{
+	    if (weekDay <= 0)
+		weekDay = 7;
+		//printing calendar for each month
+	    System.out.println (months [i - 1] + " " + year);
+	    weekDay = printCalendar (weekDay, year, months [i - 1]);
+	    System.out.println ("\n");
+	}
+    }
+
+    //method to print month calendar
+    public static void monthCalendar ()
+    {
+    //declaring variables 
+	int year, weekDay;
+	String month;
+	//getting inputs
+	System.out.println ("enter the year (after 1900): ");
+	year = In.getInt ();
+	System.out.println ("enter the month");
+	month = In.getString ();
+	//finding start weekday of the month
+	weekDay = findWeekday (year, month, 1);
+	//printing calendar
+	printCalendar (weekDay, year, month);
+    }
+
+    //method to print weekday of given date
+    public static void printWeekDay ()
+    {
+    //declaring variables
+	int year, day;
+	String month;
+	String[] weekDays = {"Saturday", "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"};
+	//getting inputs
+	System.out.println ("enter the year (after 1900): ");
+	year = In.getInt ();
+	System.out.println ("enter the month");
+	month = In.getString ();
+	System.out.println ("enter the day of the month");
+	day = In.getInt ();
+	//finding a printing weekday
+	System.out.println (month + " " + day + " is a " + weekDays [findWeekday (year, month, day)]);
+    }
+
+    //method to print date given number of days after January 1, 2023
+    public static void dateAfter1900 ()
+    {
+    //declaring variables
+	int year = 1900, month = 1, monthDays, days, dayNumber, yearLength;
+	String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "Novemeber", "December"};
+	//getting input
+	System.out.println ("enter a number of days");
+	days = In.getInt ();
+	dayNumber = days;
+	//calculating date
+	if (month == 2)
+	    if (ifLeapYear (year))
+		monthDays = 28;
+	    else
+		monthDays = 29;
+	else if (month == 4 || month == 6 || month == 9 || month == 11)
+	    monthDays = 30;
+	else
+	    monthDays = 31;
+	if (ifLeapYear (year))
+	    yearLength = 366;
+	else
+	    yearLength = 365;
+	while (dayNumber > yearLength)
+	{
+	    year++;
+	    if (ifLeapYear (year))
+		yearLength = 366;
+	    else
+		yearLength = 365;
+	    dayNumber -= yearLength;
+	}
+	for (month = 1 ; dayNumber > monthDays ; month++)
+	{
+	    if (month == 2)
+		if (ifLeapYear (year))
+		    monthDays = 28;
+		else
+		    monthDays = 29;
+	    else if (month == 4 || month == 6 || month == 9 || month == 11)
+		monthDays = 30;
+	    else
+		monthDays = 31;
+	    dayNumber -= monthDays;
+	}
+	//printing date
+	System.out.println ("The date " + days + " days after January 1st, 1900 is: " + months [month - 1] + " " + (dayNumber + 1) + ", " + year);
+    }
+
+    //method to print a month calendar for a month given start weekday
+    public static int printCalendar (int day, int year, String month)
+    {   
+	//determining total days in month
+	int totalDays;
+	if (month.toUpperCase ().equals ("FEBRUARY"))
+	    if (ifLeapYear (year))
+		totalDays = 29;
+	    else
+		totalDays = 29;
+	else if (month.toUpperCase ().equals ("APRIL") || month.toUpperCase ().equals ("JUNE") || month.toUpperCase ().equals ("SEPTEMBER") || month.toUpperCase ().equals ("NOVEMBER"))
+	    totalDays = 30;
+	else
+	    totalDays = 31;
+
+	System.out.println ("\n  Sun  Mon  Tue  Wed  Thu  Fri  Sat");
+	//finding start position
+	for (int j = 1 ; j < day ; j++)
+	    Out.print ("", 5);
+	//printing calendar
+	for (int i = 1 ; i <= totalDays ; i++)
+	{
+	    if (day == 7)
+	    {
+		Out.println (i, 5);
+		day = 0;
+	    }
+	    else
+		Out.print (i, 5);
+	    day++;
+	}
+	//return last day of the month
+	return day;
+    }
+
+    //method to check if a year is a leap year
+    public static boolean ifLeapYear (int year)
+    {
+	return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+    }
+
+    //method to find the weekday of a given date
+    public static int findWeekday (int year, String month, int day)
+    {
+	//determining month key
+	int monthKey = 0;
+	if (month.toUpperCase ().equals ("APRIL") || month.toUpperCase ().equals ("JULY") || (month.toUpperCase ().equals ("JANUARY") && ifLeapYear (year)))
+	    monthKey = 0;
+	else if (month.toUpperCase ().equals ("JANUARY") || month.toUpperCase ().equals ("OCTOBER"))
+	    monthKey = 1;
+	else if (month.toUpperCase ().equals ("MAY"))
+	    monthKey = 2;
+	else if (month.toUpperCase ().equals ("AUGUST") || (month.toUpperCase ().equals ("FEBRUARY") && ifLeapYear (year)))
+	    monthKey = 3;
+	else if (month.toUpperCase ().equals ("FEBRUARY") || month.toUpperCase ().equals ("MARCH") || month.toUpperCase ().equals ("NOVEMBER"))
+	    monthKey = 4;
+	else if (month.toUpperCase ().equals ("JUNE"))
+	    monthKey = 5;
+	else if (month.toUpperCase ().equals ("SEPTEMBER") || month.toUpperCase ().equals ("DECEMBER"))
+	    monthKey = 6;
+	//finding weekday
+	int yearKey = year % 100;
+	int weekdayNum = (int) (yearKey / 4) + yearKey + day + monthKey;
+	if (year >= 2000)
+	    weekdayNum -= 1;
+	//returning weekday as number
+	return weekdayNum % 7;
+    }
+} // Culminating class

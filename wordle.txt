@@ -1,0 +1,202 @@
+#set up
+import pygame
+import random
+
+white=255,255,255
+grey=211,211,211
+green=99,220,99
+yellow=255,255,102
+black=0,0,0
+red=255,0,0
+teal=20,150,150
+
+pygame.init()
+dis=pygame.display.set_mode((480,650))
+x=-30
+y=100
+w=1
+words=[]
+wins=0
+losses=0
+
+word_list=open('english.txt','r')
+stats_read=open('stats.txt','r')
+font=pygame.font.Font('Anonymous.ttf', 70)
+font2=pygame.font.Font('Anonymous.ttf', 90)
+font3=pygame.font.Font('Anonymous.ttf', 50)
+title=font2.render('Wordle', True, black)
+word1=font.render('', True, black)
+word2=font.render('', True, black)
+word3=font.render('', True, black)
+word4=font.render('', True, black)
+word5=font.render('', True, black)
+word6=font.render('', True, black)
+letters=font.render('' ,True, black)
+
+dis.fill(white)
+dis.blit(title,(90,10))
+for i in range(6):
+    for x in range(5):
+        pygame.draw.rect(dis,grey,(x*80+40,i*80+100,75,75),3)
+pygame.display.update()
+
+#finding answer
+answer_list=[]
+for i in word_list:
+    i=i.replace('\n','')
+    if len(i)==5:
+        answer_list.append(i)      
+random.shuffle(answer_list)
+answer=answer_list[1].upper()
+print(answer)
+#drawing everything to screen
+def draw():
+    color=grey
+    dis.fill(white)
+    dis.blit(title,(90,10))
+    for i in range(6):
+        counter=0
+        for x in range(5):
+            if w > i+1:
+                o=0
+                if words[i][counter] == answer[counter]:
+                    color=green
+                elif words[i][counter] in answer:
+                    color=yellow
+                counter+=1
+            else:
+                o=3
+            pygame.draw.rect(dis,color,(x*80+40,i*80+100,75,75),o)
+            color=grey
+    dis.blit(word1,(70,100))
+    dis.blit(word2,(70,180))
+    dis.blit(word3,(70,260))
+    dis.blit(word4,(70,340))
+    dis.blit(word5,(70,420))
+    dis.blit(word6,(70,500))
+    dis.blit(letters,(70,y))
+    pygame.display.update()
+
+clock=pygame.time.Clock()
+game=True
+#main game loop
+while game:
+    clock.tick(30)
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT:
+            pygame.quit()
+            quit()
+    
+    word_not_complete=True
+    word=""
+#word input
+    while word_not_complete:
+        clock.tick(30)
+        for event in pygame.event.get():
+            if event.type==pygame.QUIT:
+                pygame.quit()
+                quit()
+            if event.type == pygame.KEYDOWN:
+                    if event.key==pygame.K_BACKSPACE:
+                        word=word[:-2]
+                        letters=font.render(word.upper() ,True, black)
+                        draw()
+                    elif event.key==pygame.K_RETURN and len(word)==10 and word.replace(' ', '') in answer_list:
+                        word_not_complete=False
+                        word=word.upper()
+                        if w==1:
+                            word1=font.render(word, True, black)
+                            w1=word.replace(' ', '')
+                            words.append(w1)
+                        if w==2:
+                            word2=font.render(word, True, black)
+                            w2=word.replace(' ', '')
+                            words.append(w2)
+                        if w==3:
+                            word3=font.render(word, True, black)
+                            w3=word.replace(' ', '')
+                            words.append(w3)
+                        if w==4:
+                            word4=font.render(word, True, black)
+                            w4=word.replace(' ', '')
+                            words.append(w4)
+                        if w==5:
+                            word5=font.render(word, True, black)
+                            w5=word.replace(' ', '')
+                            words.append(w5)
+                        if w==6:
+                            word6=font.render(word, True, black)
+                            w6=word.replace(' ', '')
+                            words.append(w6)
+                        w+=1
+                        draw()
+                        #checking if you win and displaying win text
+                        if word[0]==answer[0] and word[2]==answer[1] and word[4]==answer[2] and word[6]==answer[3] and word[8]==answer[4]:
+                            wins=str(int(stats_read.readline())+1).replace('\n','')
+                            losses=stats_read.readline().replace('\n','')
+                            stats_read.close()
+                            win_screen=font3.render('You got the',True,black)
+                            win_screen2=font3.render('word! You now',True,black)
+                            win_screen3=font3.render('have',True,black)
+                            stats0=font3.render(wins,True,black)
+                            stats1=font3.render('wins',True,black)
+                            stats2=font3.render('and',True,black)
+                            stats3=font3.render(losses,True,black)
+                            stats4=font3.render('losses',True,black)
+                            pygame.draw.rect(dis,teal,(65,150,385,200))
+                            dis.blit(win_screen,(80,150))
+                            dis.blit(win_screen2,(80,200))
+                            dis.blit(win_screen3,(80,250))
+                            dis.blit(stats0,(200,250))
+                            dis.blit(stats1,(260,250))
+                            dis.blit(stats2,(80,300))
+                            dis.blit(stats3,(175,300))
+                            dis.blit(stats4,(245,300))
+                            game=False
+                        #checking if you lose and displaying loss text
+                        elif w==7:
+                            wins=stats_read.readline().replace('\n','')
+                            losses=str(int(stats_read.readline().replace('\n',''))+1)
+                            stats_read.close()
+                            loss_screen=font3.render('You lost! The', True,black)
+                            loss_screen2=font3.render('word was', True,black)
+                            loss_screen3=font3.render(answer.lower()+'.', True,black)
+                            loss_screen4=font3.render('You now have', True,black)
+                            stats0=font3.render(wins,True,black)
+                            stats1=font3.render('wins',True,black)
+                            stats2=font3.render('and',True,black)
+                            stats3=font3.render(losses,True,black)
+                            stats4=font3.render('losses',True,black)
+                            pygame.draw.rect(dis,teal,(45,150,395,250))
+                            dis.blit(loss_screen,(60,150))
+                            dis.blit(loss_screen2,(60,200))
+                            dis.blit(loss_screen3,(290,200))
+                            dis.blit(loss_screen4,(60,250))
+                            dis.blit(stats0,(60,300))
+                            dis.blit(stats1,(120,300))
+                            dis.blit(stats2,(245,300))
+                            dis.blit(stats3,(60,350))
+                            dis.blit(stats4,(100,350))
+                            game=False
+                              
+                        y+=80
+                        pygame.display.update()    
+                        break
+                    elif len(word)<10 and event.key>96 and event.key<123:
+                        let=(chr(event.key))
+                        word+=let
+                        word+=" "
+                        letters=font.render(word.upper() ,True, black)
+                        draw()
+#keeping track of stats
+stats=open("stats.txt","w")
+stats.write(wins)
+stats.write('\n')
+stats.write(losses)
+stats.close()
+#allowing game to be closed
+while True:                       
+    for event in pygame.event.get():
+        if event.type==pygame.QUIT:
+            pygame.quit()
+            quit()
